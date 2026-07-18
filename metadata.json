@@ -1,0 +1,6 @@
+{
+  "name": "Lagrangian Mechanics Trainer",
+  "description": "Learn to formulate Kinetic (T) and Potential (V) energies for physical systems to prepare for Lagrangian mechanics.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
