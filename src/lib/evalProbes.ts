@@ -16,7 +16,8 @@ export interface TrialProbe {
 export function generateTrialProbes(
   userExpr: string,
   targetExpr: string,
-  allowedVars: string[]
+  allowedVars: string[],
+  variations?: Record<string, number>
 ): TrialProbe[] {
   // Parse target
   let targetNode: ASTNode;
@@ -97,7 +98,15 @@ export function generateTrialProbes(
     let errorStr: string | undefined;
 
     try {
-      targetVal = evaluateAST(targetNode, trialSet.values);
+      const targetVars = { ...trialSet.values };
+      if (variations) {
+        for (const [key, mult] of Object.entries(variations)) {
+          if (targetVars[key] !== undefined) {
+             targetVars[key] = trialSet.values[key] * mult;
+          }
+        }
+      }
+      targetVal = evaluateAST(targetNode, targetVars);
     } catch {
       // should not happen for target
     }

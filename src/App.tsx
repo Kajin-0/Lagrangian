@@ -1,3 +1,7 @@
+import ReactMarkdown from 'react-markdown';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
+import 'katex/dist/katex.min.css';
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -68,6 +72,37 @@ const EULER_LAGRANGE_EQUATIONS: Record<string, string[]> = {
   'double-pendulum': [
     "theta1'' = (-g*(2*m1+m2)*sin(theta1) - m2*g*sin(theta1-2*theta2) - 2*sin(theta1-theta2)*m2*(theta2_dot^2*l2 + theta1_dot^2*l1*cos(theta1-theta2))) / (l1*(2*m1+m2-m2*cos(2*theta1-2*theta2)))",
     "theta2'' = (2*sin(theta1-theta2)*(theta1_dot^2*l1*(m1+m2) + g*(m1+m2)*cos(theta1) + theta2_dot^2*l2*m2*cos(theta1-theta2))) / (l2*(2*m1+m2-m2*cos(2*theta1-2*theta2)))"
+  ],
+  'planetary-motion': [
+    "r'' - r * theta'^2 = -G * M / r^2",
+    "r * theta'' + 2 * r' * theta' = 0"
+  ],
+  'physical-pendulum': [
+    "theta'' + (3 * g / (2 * L)) * sin(theta) = 0"
+  ]
+,
+  'rolling-wheel-incline': [
+    "x'' = (2/3) * g * sin(alpha)"
+  ],
+  'coupled-oscillators': [
+    "x1'' = -(k1+k2)/m1 * x1 + k2/m1 * x2",
+    "x2'' = k2/m2 * x1 - (k2+k3)/m2 * x2"
+  ],
+  'block-wedge': [
+    "(M+m)*X'' + m*s''*cos(alpha) = 0",
+    "s'' + X''*cos(alpha) - g*sin(alpha) = 0"
+  ],
+  'swinging-atwood': [
+    "(M+m)*r'' - m*r*theta'^2 - M*g + m*g*cos(theta) = 0",
+    "r*theta'' + 2*r'*theta' + g*sin(theta) = 0"
+  ],
+  'spherical-pendulum': [
+    "theta'' + (g/L)*sin(theta) - sin(theta)*cos(theta)*phi'^2 = 0",
+    "phi'' + 2*cot(theta)*theta'*phi' = 0"
+  ],
+  'particle-cone': [
+    "rho'' - rho*phi'^2/(1+c^2) + g*c/(1+c^2) = 0",
+    "phi'' + 2*rho'*phi'/rho = 0"
   ]
 };
 
@@ -78,6 +113,8 @@ function unicodeSymbol(v: string): string {
     case 'theta_dot': return "θ̇ (θ')";
     case 'phi': return 'φ';
     case 'phi_dot': return "φ̇ (φ')";
+    case 'rho': return 'ρ';
+    case 'rho_dot': return "ρ̇ (ρ')";
     case 'omega': return 'ω';
     case 'pi': return 'π';
     case 'x_dot': return 'ẋ';
@@ -87,8 +124,12 @@ function unicodeSymbol(v: string): string {
   }
 }
 
+import NotesEditor from './components/NotesEditor';
+
 export default function App() {
   const [selectedSystem, setSelectedSystem] = useState(PHYSICAL_SYSTEMS[0]);
+  const [variations, setVariations] = useState<Record<string, number>>({});
+  const [currentTab, setCurrentTab] = useState<'problem' | 'notes'>('problem');
   const [inputT, setInputT] = useState('');
   const [inputV, setInputV] = useState('');
 
@@ -105,6 +146,10 @@ export default function App() {
   const refInputT = useRef<HTMLInputElement>(null);
   const refInputV = useRef<HTMLInputElement>(null);
   const [lastFocusedInput, setLastFocusedInput] = useState<'T' | 'V'>('T');
+
+  useEffect(() => {
+    randomizeSystem(PHYSICAL_SYSTEMS[0]);
+  }, []);
 
   useEffect(() => {
     try {
@@ -126,7 +171,19 @@ export default function App() {
     }
   };
 
+  const randomizeSystem = (sys: typeof PHYSICAL_SYSTEMS[0]) => {
+    const newVars: Record<string, number> = {};
+    for (const p of sys.parameters) {
+      if (['g', 'c'].includes(p)) continue;
+      if (Math.random() > 0.4) {
+        newVars[p] = Math.floor(Math.random() * 3) + 2;
+      }
+    }
+    setVariations(newVars);
+  };
+
   const handleSelectSystem = (sys: typeof PHYSICAL_SYSTEMS[0]) => {
+    randomizeSystem(sys);
     setSelectedSystem(sys);
     setInputT('');
     setInputV('');
@@ -135,6 +192,25 @@ export default function App() {
     setIsVCorrect(null);
     setTrialProbesT([]);
     setTrialProbesV([]);
+  };
+
+
+  const renderDescription = () => {
+    let desc = selectedSystem.description;
+    for (const [key, mult] of Object.entries(variations)) {
+      const regex = new RegExp(`\\b${key}\\b`, 'g');
+      desc = desc.replace(regex, `${mult}${key}`);
+    }
+    return desc;
+  };
+
+  const renderEOM = (eq: string) => {
+    let res = eq;
+    for (const [key, mult] of Object.entries(variations)) {
+      const regex = new RegExp(`\\b${key}\\b`, 'g');
+      res = res.replace(regex, `(${mult}*${key})`);
+    }
+    return res;
   };
 
   const handleInsertVariable = (varName: string) => {
@@ -163,13 +239,13 @@ export default function App() {
   };
 
   const handleVerify = () => {
-    const resultT = verifyExpression(inputT, selectedSystem.correctT, selectedSystem.allowedVars);
+    const resultT = verifyExpression(inputT, selectedSystem.correctT, selectedSystem.allowedVars, variations);
     setIsTCorrect(resultT.correct);
-    setTrialProbesT(generateTrialProbes(inputT, selectedSystem.correctT, selectedSystem.allowedVars));
+    setTrialProbesT(generateTrialProbes(inputT, selectedSystem.correctT, selectedSystem.allowedVars, variations));
 
-    const resultV = verifyExpression(inputV, selectedSystem.correctV, selectedSystem.allowedVars);
+    const resultV = verifyExpression(inputV, selectedSystem.correctV, selectedSystem.allowedVars, variations);
     setIsVCorrect(resultV.correct);
-    setTrialProbesV(generateTrialProbes(inputV, selectedSystem.correctV, selectedSystem.allowedVars));
+    setTrialProbesV(generateTrialProbes(inputV, selectedSystem.correctV, selectedSystem.allowedVars, variations));
 
     setIsChecked(true);
 
@@ -185,7 +261,7 @@ export default function App() {
       
       <header className="border-b border-black px-4 py-3 flex items-center justify-between">
         <h1 className="text-sm font-bold tracking-widest uppercase">
-          Lagrangian Core
+          Lagrangian
         </h1>
         <button
           onClick={() => setIsDrawerOpen(true)}
@@ -235,18 +311,46 @@ export default function App() {
       </AnimatePresence>
 
       <main className="flex-1 w-full max-w-xl mx-auto px-4 py-6 flex flex-col gap-6">
-        
-        <section className="bg-white border border-black p-4">
-          <div className="flex justify-between items-center mb-4 border-b border-black pb-2">
-            <h2 className="text-sm font-bold uppercase tracking-widest">{selectedSystem.title}</h2>
-            <span className="text-[10px] uppercase tracking-widest">V = 0 at {selectedSystem.referenceVZero}</span>
-          </div>
-          <div className="w-full flex justify-center">
-            <SystemDiagram systemId={selectedSystem.id} />
-          </div>
-        </section>
+        <div className="flex border-b border-black">
+          <button
+            onClick={() => setCurrentTab('problem')}
+            className={`px-4 py-2 text-xs font-bold uppercase tracking-widest flex-1 ${currentTab === 'problem' ? 'bg-black text-white' : 'bg-white text-black hover:bg-gray-100'}`}
+          >
+            Problem
+          </button>
+          <button
+            onClick={() => setCurrentTab('notes')}
+            className={`px-4 py-2 text-xs font-bold uppercase tracking-widest flex-1 ${currentTab === 'notes' ? 'bg-black text-white' : 'bg-white text-black hover:bg-gray-100'}`}
+          >
+            Notes
+          </button>
+        </div>
 
-        <section className="flex flex-col gap-4">
+        {currentTab === 'notes' ? (
+          <NotesEditor systemId={selectedSystem.id} />
+        ) : (
+          <>
+            <section className="bg-white border border-black p-4">
+              <div className="flex justify-between items-center mb-4 border-b border-black pb-2">
+                <div className="flex items-center gap-3">
+                  <h2 className="text-sm font-bold uppercase tracking-widest">{selectedSystem.title}</h2>
+                  <button onClick={() => randomizeSystem(selectedSystem)} className="text-xs border border-black px-2 py-0.5 hover:bg-black hover:text-white transition flex items-center gap-1">
+                    <RefreshCw className="w-3 h-3" /> Randomize
+                  </button>
+                </div>
+                <span className="text-[10px] uppercase tracking-widest">V = 0 at {selectedSystem.referenceVZero}</span>
+              </div>
+              <div className="text-sm font-serif mb-4 leading-relaxed markdown-body">
+                <ReactMarkdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
+                  {renderDescription()}
+                </ReactMarkdown>
+              </div>
+              <div className="w-full flex justify-center">
+                <SystemDiagram systemId={selectedSystem.id} variations={variations} />
+              </div>
+            </section>
+            
+            <section className="flex flex-col gap-4">
           <div className="flex flex-col gap-2">
             <div className="flex justify-between items-center text-xs">
               <label className="font-bold uppercase tracking-widest">Kinetic Energy (T)</label>
@@ -319,10 +423,12 @@ export default function App() {
             <span className="text-xs uppercase tracking-widest font-bold">Equations of Motion</span>
             <div className="mt-3 flex flex-col gap-2 text-sm">
               {EULER_LAGRANGE_EQUATIONS[selectedSystem.id]?.map((eq, i) => (
-                <div key={i} className="font-bold">{eq}</div>
+                <div key={i} className="font-bold">{renderEOM(eq)}</div>
               ))}
             </div>
           </motion.div>
+        )}
+          </>
         )}
 
       </main>

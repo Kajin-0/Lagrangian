@@ -365,7 +365,8 @@ export interface CheckResult {
 export function verifyExpression(
   userExpr: string,
   targetExpr: string,
-  allowedVars: string[]
+  allowedVars: string[],
+  variations?: Record<string, number>
 ): CheckResult {
   if (!userExpr.trim()) {
     return { correct: false, error: 'Please enter a formula.' };
@@ -429,7 +430,15 @@ export function verifyExpression(
       }
 
       const userVal = evaluateAST(userNode, testVars);
-      const targetVal = evaluateAST(targetNode, testVars);
+      const targetVars = { ...testVars };
+      if (variations) {
+        for (const [key, mult] of Object.entries(variations)) {
+          if (targetVars[key] !== undefined) {
+             targetVars[key] = testVars[key] * mult;
+          }
+        }
+      }
+      const targetVal = evaluateAST(targetNode, targetVars);
 
       if (isNaN(userVal)) {
         return { correct: false, error: 'Formula evaluated to NaN (Not a Number) for physical inputs. Check coordinates or square roots.' };

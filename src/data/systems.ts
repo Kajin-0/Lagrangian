@@ -323,4 +323,239 @@ export const PHYSICAL_SYSTEMS: PhysicalSystem[] = [
       'The potential energy is simply $V = m_1 g y_1 + m_2 g y_2$.'
     ]
   }
+,
+  {
+    id: 'planetary-motion',
+    title: 'Planetary Motion',
+    difficulty: 'Intermediate',
+    shortDescription: 'A planet orbiting a massive star under gravity.',
+    description: 'A planet of mass $m$ orbits a star of mass $M$. The star is much heavier and assumed fixed at the origin. Use polar coordinates $(r, \theta)$ for the planet, where $r$ is the radial distance from the star, and $\theta$ is the angular position. The gravitational constant is $G$.',
+    coordinates: ['r', 'r_dot', 'theta', 'theta_dot'],
+    parameters: ['m', 'M', 'G'],
+    allowedVars: ['m', 'M', 'G', 'r', 'r_dot', 'theta', 'theta_dot'],
+    variablesExplanation: [
+      { symbol: 'm', meaning: 'Mass of the planet', unit: 'kg' },
+      { symbol: 'M', meaning: 'Mass of the star', unit: 'kg' },
+      { symbol: 'G', meaning: 'Gravitational constant', unit: 'N·m²/kg²' },
+      { symbol: 'r', meaning: 'Radial distance from the star', unit: 'm' },
+      { symbol: 'r_dot', meaning: 'Radial velocity', unit: 'm/s' },
+      { symbol: 'theta', meaning: 'Angular position', unit: 'rad' },
+      { symbol: 'theta_dot', meaning: 'Angular velocity', unit: 'rad/s' }
+    ],
+    correctT: '0.5 * m * (r_dot^2 + r^2 * theta_dot^2)',
+    correctV: '-G * m * M / r',
+    exampleT: '1/2 * m * (r_dot^2 + r^2 * theta_dot^2)',
+    exampleV: '-G * m * M / r',
+    referenceVZero: 'V = 0 at r = infinity.',
+    hints: [
+      'The velocity vector in polar coordinates is $\\vec{v} = \\dot{r}\\hat{r} + r\\dot{\\theta}\\hat{\\theta}$.',
+      'Kinetic energy is $T = \\frac{1}{2} m v^2 = \\frac{1}{2} m (\\dot{r}^2 + r^2 \\dot{\\theta}^2)$.',
+      'The potential energy for Newton\'s law of universal gravitation is $V = -\\frac{GmM}{r}$.'
+    ]
+  },
+  {
+    id: 'physical-pendulum',
+    title: 'Physical Pendulum (Falling Stick)',
+    difficulty: 'Beginner',
+    shortDescription: 'A uniform rod swinging from a pivot at one end.',
+    description: 'A uniform rod of mass $m$ and length $L$ is pivoted at one of its ends and oscillates under gravity $g$. Its moment of inertia about the pivot is $I = \\frac{1}{3}mL^2$. Let $\\theta$ be the angle from the downward vertical.',
+    coordinates: ['theta', 'theta_dot'],
+    parameters: ['m', 'L', 'g'],
+    allowedVars: ['m', 'L', 'g', 'theta', 'theta_dot'],
+    variablesExplanation: [
+      { symbol: 'm', meaning: 'Mass of the rod', unit: 'kg' },
+      { symbol: 'L', meaning: 'Length of the rod', unit: 'm' },
+      { symbol: 'g', meaning: 'Gravitational acceleration', unit: 'm/s²' },
+      { symbol: 'theta', meaning: 'Angle from the downward vertical', unit: 'rad' },
+      { symbol: 'theta_dot', meaning: 'Angular velocity', unit: 'rad/s' }
+    ],
+    correctT: '1/6 * m * L^2 * theta_dot^2',
+    correctV: '-m * g * (L / 2) * cos(theta)',
+    exampleT: '1/2 * (1/3 * m * L^2) * theta_dot^2',
+    exampleV: '-m * g * (L / 2) * cos(theta)',
+    referenceVZero: 'V = 0 at the pivot point.',
+    hints: [
+      'The kinetic energy of a purely rotating rigid body is $T = \\frac{1}{2} I \\dot{\\theta}^2$.',
+      'The moment of inertia of a rod about its end is $I = \\frac{1}{3} m L^2$.',
+      'The potential energy depends on the height of the center of mass. The CM is at distance $L/2$ from the pivot, so its height is $-\\frac{L}{2} \\cos\\theta$.'
+    ]
+  }
+,
+  {
+    id: 'rolling-wheel-incline',
+    title: 'Rolling Wheel on Incline',
+    difficulty: 'Intermediate',
+    shortDescription: 'A wheel rolling down a slope without slipping.',
+    description: 'A uniform wheel (solid cylinder) of mass $m$ and radius $R$ rolls without slipping down an incline of angle $\\alpha$. Let $x$ be the distance the wheel has traveled down the incline. The moment of inertia of a uniform solid cylinder is $I = \\frac{1}{2}mR^2$.',
+    coordinates: ['x', 'x_dot'],
+    parameters: ['m', 'R', 'g', 'alpha'],
+    allowedVars: ['m', 'R', 'g', 'alpha', 'x', 'x_dot'],
+    variablesExplanation: [
+      { symbol: 'm', meaning: 'Mass of the wheel', unit: 'kg' },
+      { symbol: 'R', meaning: 'Radius of the wheel', unit: 'm' },
+      { symbol: 'g', meaning: 'Gravitational acceleration', unit: 'm/s²' },
+      { symbol: 'alpha', meaning: 'Angle of the incline', unit: 'rad' },
+      { symbol: 'x', meaning: 'Distance traveled down the incline', unit: 'm' },
+      { symbol: 'x_dot', meaning: 'Translational velocity', unit: 'm/s' }
+    ],
+    correctT: '0.75 * m * x_dot^2',
+    correctV: '-m * g * x * sin(alpha)',
+    exampleT: '0.5 * m * x_dot^2 + 0.5 * (0.5 * m * R^2) * (x_dot / R)^2',
+    exampleV: '-m * g * x * sin(alpha)',
+    referenceVZero: 'V = 0 at the starting position (x = 0).',
+    hints: [
+      'The total kinetic energy is the sum of translational and rotational kinetic energy: $T = \\frac{1}{2}mv^2 + \\frac{1}{2}I\\omega^2$.',
+      'The rolling without slipping condition links the translational and angular velocities: $v = \\omega R$, or $\\omega = \\frac{\\dot{x}}{R}$.',
+      'The vertical drop after traveling a distance $x$ along the incline is $x \\sin\\alpha$.'
+    ]
+  },
+  {
+    id: 'coupled-oscillators',
+    title: 'Coupled Oscillators',
+    difficulty: 'Intermediate',
+    shortDescription: 'Two masses connected by three springs.',
+    description: 'Two masses $m_1$ and $m_2$ slide on a frictionless horizontal surface. They are connected to two fixed walls by springs of constants $k_1$ and $k_3$, and to each other by a spring of constant $k_2$. Let $x_1$ and $x_2$ be their displacements from equilibrium.',
+    coordinates: ['x1', 'x1_dot', 'x2', 'x2_dot'],
+    parameters: ['m1', 'm2', 'k1', 'k2', 'k3'],
+    allowedVars: ['m1', 'm2', 'k1', 'k2', 'k3', 'x1', 'x1_dot', 'x2', 'x2_dot'],
+    variablesExplanation: [
+      { symbol: 'm1', meaning: 'Mass 1', unit: 'kg' },
+      { symbol: 'm2', meaning: 'Mass 2', unit: 'kg' },
+      { symbol: 'k1', meaning: 'Spring 1 constant', unit: 'N/m' },
+      { symbol: 'k2', meaning: 'Coupling spring constant', unit: 'N/m' },
+      { symbol: 'k3', meaning: 'Spring 3 constant', unit: 'N/m' },
+      { symbol: 'x1', meaning: 'Displacement of mass 1', unit: 'm' },
+      { symbol: 'x1_dot', meaning: 'Velocity of mass 1', unit: 'm/s' },
+      { symbol: 'x2', meaning: 'Displacement of mass 2', unit: 'm' },
+      { symbol: 'x2_dot', meaning: 'Velocity of mass 2', unit: 'm/s' }
+    ],
+    correctT: '0.5 * m1 * x1_dot^2 + 0.5 * m2 * x2_dot^2',
+    correctV: '0.5 * k1 * x1^2 + 0.5 * k2 * (x2 - x1)^2 + 0.5 * k3 * x2^2',
+    exampleT: '1/2 * m1 * x1_dot^2 + 1/2 * m2 * x2_dot^2',
+    exampleV: '1/2 * k1 * x1^2 + 1/2 * k2 * (x2 - x1)^2 + 1/2 * k3 * x2^2',
+    referenceVZero: 'V = 0 at the equilibrium positions.',
+    hints: [
+      'The kinetic energy is simply the sum of the kinetic energies of each mass.',
+      'The potential energy is the sum of the elastic potential energies stored in all three springs.',
+      'The stretch of the middle spring is the difference in displacements of the two masses, $(x_2 - x_1)$.'
+    ]
+  },
+  {
+    id: 'block-wedge',
+    title: 'Block on a Movable Wedge',
+    difficulty: 'Advanced',
+    shortDescription: 'A block sliding down a wedge that can slide horizontally.',
+    description: 'A wedge of mass $M$ is free to slide on a frictionless horizontal floor. A block of mass $m$ slides down the frictionless face of the wedge, which has an angle $\\alpha$. Let $X$ be the horizontal position of the wedge, and $s$ be the distance the block has slid down the wedge from the top.',
+    coordinates: ['X', 'X_dot', 's', 's_dot'],
+    parameters: ['M', 'm', 'g', 'alpha'],
+    allowedVars: ['M', 'm', 'g', 'alpha', 'X', 'X_dot', 's', 's_dot'],
+    variablesExplanation: [
+      { symbol: 'M', meaning: 'Mass of the wedge', unit: 'kg' },
+      { symbol: 'm', meaning: 'Mass of the block', unit: 'kg' },
+      { symbol: 'g', meaning: 'Gravitational acceleration', unit: 'm/s²' },
+      { symbol: 'alpha', meaning: 'Angle of the wedge', unit: 'rad' },
+      { symbol: 'X', meaning: 'Horizontal position of the wedge', unit: 'm' },
+      { symbol: 'X_dot', meaning: 'Velocity of the wedge', unit: 'm/s' },
+      { symbol: 's', meaning: 'Distance block has slid down wedge', unit: 'm' },
+      { symbol: 's_dot', meaning: 'Velocity of block relative to wedge', unit: 'm/s' }
+    ],
+    correctT: '0.5 * M * X_dot^2 + 0.5 * m * (X_dot^2 + s_dot^2 + 2 * X_dot * s_dot * cos(alpha))',
+    correctV: '-m * g * s * sin(alpha)',
+    exampleT: '1/2 * M * X_dot^2 + 1/2 * m * ((X_dot + s_dot * cos(alpha))^2 + (-s_dot * sin(alpha))^2)',
+    exampleV: '-m * g * s * sin(alpha)',
+    referenceVZero: 'V = 0 at the top of the wedge (s = 0).',
+    hints: [
+      'The wedge moves horizontally with velocity $\\dot{X}$.',
+      'The block\'s velocity vector has two components: the wedge\'s velocity $\\dot{X}$ horizontally, plus its relative velocity $\\dot{s}$ parallel to the wedge surface.',
+      'The block\'s total velocity squared is $v^2 = v_x^2 + v_y^2$, where $v_x = \\dot{X} + \\dot{s} \\cos\\alpha$ and $v_y = -\\dot{s} \\sin\\alpha$.'
+    ]
+  },
+  {
+    id: 'swinging-atwood',
+    title: 'Swinging Atwood Machine',
+    difficulty: 'Advanced',
+    shortDescription: 'An Atwood machine with a swinging mass.',
+    description: 'An Atwood machine where one mass $M$ is constrained to move vertically, and the other mass $m$ can swing as a pendulum in a 2D plane. The total length of the string is $L$. Let $r$ be the distance from the pulley to the swinging mass $m$, and $\\theta$ be its angular deflection. Then the distance to $M$ is $L - r$.',
+    coordinates: ['r', 'r_dot', 'theta', 'theta_dot'],
+    parameters: ['M', 'm', 'g', 'L'],
+    allowedVars: ['M', 'm', 'g', 'L', 'r', 'r_dot', 'theta', 'theta_dot'],
+    variablesExplanation: [
+      { symbol: 'M', meaning: 'Counterweight mass', unit: 'kg' },
+      { symbol: 'm', meaning: 'Swinging mass', unit: 'kg' },
+      { symbol: 'g', meaning: 'Gravitational acceleration', unit: 'm/s²' },
+      { symbol: 'L', meaning: 'Total length of string', unit: 'm' },
+      { symbol: 'r', meaning: 'Length of the swinging part of string', unit: 'm' },
+      { symbol: 'r_dot', meaning: 'Radial velocity of swinging mass', unit: 'm/s' },
+      { symbol: 'theta', meaning: 'Angle of swinging mass', unit: 'rad' },
+      { symbol: 'theta_dot', meaning: 'Angular velocity of swinging mass', unit: 'rad/s' }
+    ],
+    correctT: '0.5 * M * r_dot^2 + 0.5 * m * (r_dot^2 + r^2 * theta_dot^2)',
+    correctV: 'M * g * r - m * g * r * cos(theta)',
+    exampleT: '1/2 * M * (-r_dot)^2 + 1/2 * m * (r_dot^2 + r^2 * theta_dot^2)',
+    exampleV: '-M * g * (L - r) - m * g * r * cos(theta)',
+    referenceVZero: 'V = 0 at the pulley, neglecting constant offset -MgL.',
+    hints: [
+      'The velocity of $M$ is purely vertical, and equal to $-\\dot{r}$ (since its position is $y = L - r$).',
+      'The velocity of $m$ is expressed in polar coordinates: $v^2 = \\dot{r}^2 + r^2 \\dot{\\theta}^2$.',
+      'The potential energy of $M$ is $-Mg(L-r)$. We can ignore the constant $-MgL$ part.'
+    ]
+  }
+,
+  {
+    id: 'spherical-pendulum',
+    title: 'Spherical Pendulum',
+    difficulty: 'Advanced',
+    shortDescription: 'A pendulum free to swing in three dimensions.',
+    description: 'A mass $m$ is suspended from a pivot by a massless string of length $L$, free to swing in 3D space. Use spherical coordinates with $\\theta$ as the polar angle (from the downward vertical) and $\\phi$ as the azimuthal angle.',
+    coordinates: ['theta', 'theta_dot', 'phi', 'phi_dot'],
+    parameters: ['m', 'L', 'g'],
+    allowedVars: ['m', 'L', 'g', 'theta', 'theta_dot', 'phi', 'phi_dot'],
+    variablesExplanation: [
+      { symbol: 'm', meaning: 'Mass of the bob', unit: 'kg' },
+      { symbol: 'L', meaning: 'Length of the pendulum string', unit: 'm' },
+      { symbol: 'g', meaning: 'Gravitational acceleration', unit: 'm/s²' },
+      { symbol: 'theta', meaning: 'Polar angle (from downward vertical)', unit: 'rad' },
+      { symbol: 'theta_dot', meaning: 'Polar angular velocity', unit: 'rad/s' },
+      { symbol: 'phi', meaning: 'Azimuthal angle', unit: 'rad' },
+      { symbol: 'phi_dot', meaning: 'Azimuthal angular velocity', unit: 'rad/s' }
+    ],
+    correctT: '0.5 * m * L^2 * (theta_dot^2 + (sin(theta))^2 * phi_dot^2)',
+    correctV: '-m * g * L * cos(theta)',
+    exampleT: '1/2 * m * L^2 * (theta_dot^2 + sin(theta)^2 * phi_dot^2)',
+    exampleV: '-m * g * L * cos(theta)',
+    referenceVZero: 'V = 0 at the pivot.',
+    hints: [
+      'The kinetic energy is $T = \\frac{1}{2}m v^2$. In spherical coordinates with constant $L$, $v^2 = L^2 \\dot{\\theta}^2 + L^2 \\sin^2\\theta \\dot{\\phi}^2$.',
+      'The potential energy depends on the vertical height $z = -L \\cos\\theta$.'
+    ]
+  },
+  {
+    id: 'particle-cone',
+    title: 'Particle in a Cone',
+    difficulty: 'Advanced',
+    shortDescription: 'A particle sliding inside a frictionless inverted cone.',
+    description: 'A particle of mass $m$ is constrained to slide on the inside surface of a frictionless inverted cone. The cone\'s surface is described by $z = c \\rho$ in cylindrical coordinates, where $c$ is a constant slope. Let $\\rho$ be the horizontal radius from the axis, and $\\phi$ the azimuthal angle.',
+    coordinates: ['rho', 'rho_dot', 'phi', 'phi_dot'],
+    parameters: ['m', 'c', 'g'],
+    allowedVars: ['m', 'c', 'g', 'rho', 'rho_dot', 'phi', 'phi_dot'],
+    variablesExplanation: [
+      { symbol: 'm', meaning: 'Mass of the particle', unit: 'kg' },
+      { symbol: 'c', meaning: 'Slope of the cone (z = c * rho)', unit: 'dimensionless' },
+      { symbol: 'g', meaning: 'Gravitational acceleration', unit: 'm/s²' },
+      { symbol: 'rho', meaning: 'Horizontal distance from central axis', unit: 'm' },
+      { symbol: 'rho_dot', meaning: 'Radial velocity', unit: 'm/s' },
+      { symbol: 'phi', meaning: 'Azimuthal angle', unit: 'rad' },
+      { symbol: 'phi_dot', meaning: 'Azimuthal angular velocity', unit: 'rad/s' }
+    ],
+    correctT: '0.5 * m * ((1 + c^2) * rho_dot^2 + rho^2 * phi_dot^2)',
+    correctV: 'm * g * c * rho',
+    exampleT: '1/2 * m * (rho_dot^2 + rho^2 * phi_dot^2 + c^2 * rho_dot^2)',
+    exampleV: 'm * g * c * rho',
+    referenceVZero: 'V = 0 at the apex of the cone (rho = 0).',
+    hints: [
+      'The velocity in cylindrical coordinates is $v^2 = \\dot{\\rho}^2 + \\rho^2\\dot{\\phi}^2 + \\dot{z}^2$.',
+      'Since $z = c\\rho$, taking the time derivative gives $\\dot{z} = c\\dot{\\rho}$. Substitute this into $T$.',
+      'Potential energy is $V = mgz = mgc\\rho$.'
+    ]
+  }
 ];

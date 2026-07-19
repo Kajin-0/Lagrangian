@@ -2,9 +2,8 @@ const fs = require('fs');
 let appCode = fs.readFileSync('src/App.tsx', 'utf-8');
 
 appCode = appCode.replace(
-  `    "r*theta'' + 2*r'*theta' + g*sin(theta) = 0"
-,`,
-  `    "r*theta'' + 2*r'*theta' + g*sin(theta) = 0"\n  ],`
+  `  ]\n  ]\n};`,
+  `  ]\n};`
 );
 
 fs.writeFileSync('src/App.tsx', appCode);
